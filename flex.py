@@ -7,8 +7,11 @@ tokens = [
 	'NAME',
 	'OPENB',
 	'CLOSEB',
-	'OP',
+	'OPENP',
+	'CLOSEP',
 	'SEP',
+	'DOT',
+	'IN',
 	'RESERVED'
 ]
 
@@ -18,16 +21,23 @@ t_ignore_COMMENT = r'(/\*(.|\n)*?\*/)|(//.*)'
 
 t_OPENB  = r'\['
 t_CLOSEB  = r'\]'
+t_OPENP  = r'\('
+t_CLOSEP  = r'\)'
+
 t_SEP = r','
+t_DOT = r'\.'
 
-t_OP = r'\+|\*'
-
-t_RESERVED = r'\.(friedman|size|R|avg)'
+t_IN = r'->'
 
 def t_NAME(t: lex.LexToken):
 	r'[a-zA-Z](\w|\d)*'
+	import re
 	if t.value == 'new':
 		t.type = 'NEW'
+	elif re.match(r'(friedman|size|range|avg)', t.value):
+		t.type = 'RESERVED'
+	elif re.match(r'in', t.value):
+		t.type = 'IN'
 	return t
 
 
