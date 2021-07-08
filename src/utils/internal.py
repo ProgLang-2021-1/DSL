@@ -4,8 +4,13 @@ def transpose(data):
 def range_of(data: dict):
 	from operator import itemgetter
 	results = []
+
+	if type(data[0]) is not list:
+		data = [data]
+
 	for matrix in data:
 		a = [ i for (i,j) in sorted(enumerate(matrix), key=itemgetter(1))]
+		
 		result = [element for _, element in sorted(zip(a, range(1,len(a)+1)))]
 
 		current = None
@@ -27,7 +32,7 @@ def range_of(data: dict):
 				i = j = r
 
 		results.append(result)
-	return results
+	return results if len(results) > 1 else results[0]
 
 def avg_of(matrix: list):
 	if type(matrix[0]) is list:
