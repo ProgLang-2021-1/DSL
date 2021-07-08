@@ -5,12 +5,12 @@ var = {}
 
 def p_expression(p):
 	"""expression : create
-		| data
+		| insertion
 		| access
 	"""
-	p[0] = p[1]
-	print('variables:\n', var)
-	print('\tp[0]', p[0])
+	p[0] = p[1]['exec']
+	p[1]['exec'] = p[1]['patients']
+
 
 def p_expression_creation_treatments(p):
 	"""create : NEW NAME OPENB treatments CLOSEB
@@ -19,16 +19,17 @@ def p_expression_creation_treatments(p):
 	global var
 	if len(p) == 6:
 		p[4].reverse()
-		var[p[2]] = {'treatments': p[4],'patients': []}
+		var[p[2]] = {'treatments': p[4],'patients': [],'exec': []}
+		p[0] = var[p[2]]
 	elif len(p) == 2:
-		p[0] = [p[1]]
+			p[0] = [p[1]]
 	elif len(p) == 4:
 		# p[3] is treatments
 		p[0] = p[3]
 		p[0].append(p[1])
 
-def p_expression_data(p):
-	"""data : OPENB matrix CLOSEB IN NAME
+def p_expression_insertion(p):
+	"""insertion : OPENB matrix CLOSEB IN NAME
 		| OPENB arr CLOSEB IN NAME"""
 	global var
 	p[2].reverse()
@@ -39,6 +40,10 @@ def p_expression_data(p):
 				var[p[5]]['patients'].append(patient)
 		else:
 			var[p[5]]['patients'].append(p[2])
+		p[0] = var[p[5]]
+		
+		# exec must be equal to patients by default
+		var[p[5]]['exec'] = p[0]['patients']
 	else:
 		raise KeyError(f'"{p[5]}" does not exist')
 
@@ -59,14 +64,15 @@ def p_expression_arr(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		# p[3] is data
+		# p[3] is arr
 		p[0] = p[3]
 		p[0].append(p[1])
 
 def p_expression_access(p):
-	"""access : NAME OPENB NUM CLOSEB
-		| NAME OPENB NUM CLOSEB DOT NAME
-		| NAME DOT NAME
+	"""access : other OPENB NUM CLOSEB
+		| other OPENB NUM CLOSEB DOT NAME
+		| other DOT NAME
+		| other
 	"""
 	global var
 	
