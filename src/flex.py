@@ -17,7 +17,7 @@ tokens = [
 
 
 # Regular expression rules for simple tokens
-t_ignore_COMMENT = r'(/\*(.|\n)*?\*/)|(//.*)'
+t_ignore_COMMENT = r'(/\*(.\r?\n)*?\*/)|(//.*)'
 
 t_OPENB  = r'\['
 t_CLOSEB  = r'\]'
@@ -44,7 +44,10 @@ def t_NAME(t: lex.LexToken):
 # A regular expression rule with some action code
 def t_NUM(t: lex.LexToken):
 	r'-?\d+(\.\d+)?([eE][+-]?\d+)?'
-	t.value = float(t.value)
+	if '.' in t.value:
+		t.value = float(t.value)
+	else:
+		t.value = int(t.value)
 	return t
 
 # Define a rule so we can track line numbers
