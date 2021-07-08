@@ -5,7 +5,8 @@ def range_of(data: dict):
 	from operator import itemgetter
 	results = []
 
-	if type(data[0]) is not list:
+	is_array = type(data[0]) is not list
+	if is_array:
 		data = [data]
 
 	for matrix in data:
@@ -32,7 +33,7 @@ def range_of(data: dict):
 				i = j = r
 
 		results.append(result)
-	return results if len(results) > 1 else results[0]
+	return results if not is_array else results[0]
 
 def avg_of(matrix: list):
 	if type(matrix[0]) is list:
