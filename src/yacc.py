@@ -110,7 +110,6 @@ def p_expression_other(p):
 		 | function
 			"""
 	if type(p[1]) is str:
-		# Can exec be reseted here?
 		var[p[1]]['exec'] = var[p[1]]['patients']
 		p[0] = var[p[1]]
 	else:
@@ -137,11 +136,18 @@ def p_error(p):
 parser = yacc.yacc(debug=True, start='expression')
 
 if __name__ == '__main__':
+	display = True
 	while True:
 		try:
 			s = input()
 		except EOFError:
 			break
 		if not s: continue
-		result = parser.parse(s)
-		print(result)
+		try:
+			result = parser.parse(s)
+			if display:
+				print(">", s, '\n---->', result, end='\n\n')
+			else:
+				print(result)
+		except Exception as e:
+			print(">", s, '\n****>', e, end='\n\n')
