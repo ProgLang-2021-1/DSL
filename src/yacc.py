@@ -75,27 +75,58 @@ def p_expression_access(p):
 		| other
 	"""
 	global var
-	
 
-	# data[idx]
+	# Important: p[1] is an instance of var
+
+	# other[idx]
 	if len(p) == 5:
 		if type(p[3]) is int:
-			p[0] = var[p[1]]['patients'][p[3]-1]
+			p[1]['exec'] = p[1]['exec'][p[3]-1]
+			p[0] = p[1]
 		else:
 			raise TypeError('Index must be integer')
 
-	# data[idx].treatment_name
+	# other[idx].treatment_name
 	elif len(p) == 7:
-		treatment_index = var[p[1]]['treatments'].index(p[6])
+		treatment_index = p[1]['treatments'].index(p[6])
 		if type(p[3]) is int:
-			p[0] = var[p[1]]['patients'][p[3]-1][treatment_index]
+			p[1]['exec'] = p[1]['exec'][p[3]-1][treatment_index]
+			p[0] = p[1]
 		else:
 			raise TypeError('Index must be integer')
 
-	# data.treatment_name
+	# other.treatment_name
 	elif len(p) == 4:
-		treatment_index = var[p[1]]['treatments'].index(p[3])
-		p[0] = internal.transpose(var[p[1]])[treatment_index]
+		treatment_index = p[1]['treatments'].index(p[3])
+		p[1]['exec'] = internal.transpose(p[1]['exec'])[treatment_index]
+		p[0] = p[1]
+	
+	elif len(p) == 2:
+		p[0] = p[1]
+		
+
+def p_expression_other(p):
+	"""other : NAME
+		 | function
+			"""
+	if type(p[1]) is str:
+		# Can exec be reseted here?
+		var[p[1]]['exec'] = var[p[1]]['patients']
+		p[0] = var[p[1]]
+	else:
+		p[0] = p[1]
+
+def p_expression_function(p):
+	"""function : RESERVED OPENP access CLOSEP"""
+	global var
+	# p[3] must be an instance of var
+	if type(p[3]['exec']) is int or type(p[3]['exec']) is float:
+		raise TypeError('Value in function cannot be a number')
+	
+	if p[1] in internal.functions.keys():
+		p[3]['exec'] = internal.functions[p[1]](p[3]['exec'])
+
+	p[0] = p[3]
 
 def p_error(p):
 	if p:
