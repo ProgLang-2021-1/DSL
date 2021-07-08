@@ -62,6 +62,8 @@ def p_expression_matrix(p):
 def p_expression_arr(p):
 	"""arr : arr SEP NUM
 		| NUM
+		arr_str : arr_str SEP NAME
+		| NAME
 	"""
 	if len(p) == 2:
 		p[0] = [p[1]]
@@ -71,24 +73,40 @@ def p_expression_arr(p):
 		p[0].append(p[3])
 
 def p_expression_access(p):
-	"""access : other OPENB NUM CLOSEB
-		| other OPENB NUM CLOSEB DOT NAME
-		| other DOT NAME
+	"""access : other OPENB arr CLOSEB OPENB arr_str CLOSEB
+		| other OPENB arr_str CLOSEB OPENB arr CLOSEB
+		| other OPENB arr CLOSEB
+		| other OPENB arr_str CLOSEB
 		| other
 	"""
 	global var
 
 	# Important: p[1] is an instance of var
+	if type(p[1]['exec']) is int or type(p[1]['exec']) is float:
+		raise IndexError(f'Can\'t access to an index of function ')
 
-	# other[idx]
+
+	# other[idxs] | other[treatment_names]
 	if len(p) == 5:
 		if type(p[3]) is int:
-			p[1]['exec'] = p[1]['exec'][p[3]-1]
+			# TODO: zero must be all data
+			if p[3] == 0:
+				p[1]['exec'] = p[1]['exec']
+			else:
+				p[1]['exec'] = p[1]['exec'][p[3]-1]
+			p[0] = p[1]
+		elif type(p[3]) is str:
+			# single
+			if p[3] != 'treatments':
+				treatment_index = p[1]['treatments'].index(p[3])
+				p[1]['exec'] = internal.transpose(p[1]['exec'])[treatment_index]
+			else:
+				p[1]['exec'] = internal.transpose(p[1]['exec'])
 			p[0] = p[1]
 		else:
 			raise TypeError('Index must be integer')
 
-	# other[idx].treatment_name
+	# other[idx][treatment_name] | other[treatment_name][idx]
 	elif len(p) == 7:
 		treatment_index = p[1]['treatments'].index(p[6])
 		if type(p[3]) is int:
@@ -96,12 +114,6 @@ def p_expression_access(p):
 			p[0] = p[1]
 		else:
 			raise TypeError('Index must be integer')
-
-	# other.treatment_name
-	elif len(p) == 4:
-		treatment_index = p[1]['treatments'].index(p[3])
-		p[1]['exec'] = internal.transpose(p[1]['exec'])[treatment_index]
-		p[0] = p[1]
 
 	elif len(p) == 2:
 		p[0] = p[1]
