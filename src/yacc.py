@@ -23,7 +23,7 @@ def p_expression_creation_treatments(p):
 		var[p[2]] = {'treatments': p[4],'patients': [],'exec': []}
 		p[0] = var[p[2]]
 		p[0]['exec'] = p[0]['treatments']
-		
+
 	# treatments
 	elif len(p) == 2:
 			p[0] = [p[1]]
@@ -43,7 +43,7 @@ def p_expression_insertion(p):
 		else:
 			var[p[5]]['patients'].append(p[2])
 		p[0] = var[p[5]]
-		
+
 		# exec must be equal to patients by default
 		var[p[5]]['exec'] = p[0]['patients']
 	else:
@@ -52,7 +52,7 @@ def p_expression_insertion(p):
 def p_expression_matrix(p):
 	"""matrix : matrix SEP OPENB arr CLOSEB
 			| OPENB arr CLOSEB """
-	
+
 	if len(p) == 4:
 		p[0] = [p[2]]
 	else:
@@ -102,10 +102,10 @@ def p_expression_access(p):
 		treatment_index = p[1]['treatments'].index(p[3])
 		p[1]['exec'] = internal.transpose(p[1]['exec'])[treatment_index]
 		p[0] = p[1]
-	
+
 	elif len(p) == 2:
 		p[0] = p[1]
-		
+
 
 def p_expression_other(p):
 	"""other : NAME
@@ -123,7 +123,7 @@ def p_expression_function(p):
 	# p[3] must be an instance of var
 	if type(p[3]['exec']) is int or type(p[3]['exec']) is float:
 		raise TypeError('Value in function cannot be a number')
-	
+
 	if p[1] in internal.functions.keys():
 		p[3]['exec'] = internal.functions[p[1]](p[3]['exec'])
 

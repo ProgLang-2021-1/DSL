@@ -10,7 +10,7 @@ def range_of(data: dict):
 
 	for matrix in data:
 		a = [ i for (i,j) in sorted(enumerate(matrix), key=itemgetter(1))]
-		
+
 		result = [element for _, element in sorted(zip(a, range(1,len(a)+1)))]
 
 		current = None
