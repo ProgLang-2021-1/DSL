@@ -4,12 +4,14 @@ from utils import internal
 var = {}
 
 def p_expression(p):
-	"""expression : create
+	"""expression :
+		| create
 		| insertion
 		| access
 	"""
-	p[0] = p[1]['exec']
-	p[1]['exec'] = p[1]['patients']
+	if len(p) > 1:
+		p[0] = p[1]['exec']
+		p[1]['exec'] = p[1]['patients']
 
 
 def p_expression_creation_treatments(p):
@@ -145,9 +147,10 @@ if __name__ == '__main__':
 		if not s: continue
 		try:
 			result = parser.parse(s)
-			if display:
-				print(">", s, '\n---->', result, end='\n\n')
-			else:
-				print(result)
+			if result is not None:
+				if display:
+					print(">", s, '\n---->', result, end='\n\n')
+				else:
+					print(result)
 		except Exception as e:
 			print(">", s, '\n****>', e, end='\n\n')
