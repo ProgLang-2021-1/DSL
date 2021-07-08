@@ -44,10 +44,10 @@ def t_NAME(t: lex.LexToken):
 # A regular expression rule with some action code
 def t_NUM(t: lex.LexToken):
 	r'-?\d+(\.\d+)?([eE][+-]?\d+)?'
-	if '.' in t.value:
+	if float(t.value) != int(float(t.value)):
 		t.value = float(t.value)
 	else:
-		t.value = int(t.value)
+		t.value = int(float(t.value))
 	return t
 
 # Define a rule so we can track line numbers
