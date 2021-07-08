@@ -1,13 +1,16 @@
 import ply.yacc as yacc
 from flex import tokens
+from utils import internal
 var = {}
 
 def p_expression(p):
 	"""expression : create
 		| data
+		| access
 	"""
 	p[0] = p[1]
 	print('variables:\n', var)
+	print('\tp[0]', p[0])
 
 def p_expression_creation_treatments(p):
 	"""create : NEW NAME OPENB treatments CLOSEB
@@ -62,7 +65,7 @@ def p_expression_arr(p):
 
 def p_error(p):
 	if p:
-		print("Syntax error at '%s'" % p.value)
+		print("Syntax error at '%s'" % p.value, p)
 	else:
 		print("Syntax error at EOF")
 
@@ -71,7 +74,7 @@ parser = yacc.yacc(debug=True, start='expression')
 if __name__ == '__main__':
 	while True:
 		try:
-			s = input('DSL > ')
+			s = input()
 		except EOFError:
 			break
 		if not s: continue
