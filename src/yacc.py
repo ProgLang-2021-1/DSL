@@ -63,6 +63,34 @@ def p_expression_arr(p):
 		p[0] = p[3]
 		p[0].append(p[1])
 
+def p_expression_access(p):
+	"""access : NAME OPENB NUM CLOSEB
+		| NAME OPENB NUM CLOSEB DOT NAME
+		| NAME DOT NAME
+	"""
+	global var
+	
+
+	# data[idx]
+	if len(p) == 5:
+		if type(p[3]) is int:
+			p[0] = var[p[1]]['patients'][p[3]-1]
+		else:
+			raise TypeError('Index must be integer')
+
+	# data[idx].treatment_name
+	elif len(p) == 7:
+		treatment_index = var[p[1]]['treatments'].index(p[6])
+		if type(p[3]) is int:
+			p[0] = var[p[1]]['patients'][p[3]-1][treatment_index]
+		else:
+			raise TypeError('Index must be integer')
+
+	# data.treatment_name
+	elif len(p) == 4:
+		treatment_index = var[p[1]]['treatments'].index(p[3])
+		p[0] = internal.transpose(var[p[1]])[treatment_index]
+
 def p_error(p):
 	if p:
 		print("Syntax error at '%s'" % p.value, p)
