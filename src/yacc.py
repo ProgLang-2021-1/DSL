@@ -1,6 +1,6 @@
 import ply.yacc as yacc
-from flex import tokens
-from utils import internal
+from .flex import tokens
+from .utils import internal
 var = {}
 
 def p_expression(p):
@@ -79,13 +79,13 @@ def p_expression_access(p):
 	"""
 	global var
 
-	# Important: p[1] is an instance of var
-	if type(p[1]['exec']) is int or type(p[1]['exec']) is float:
-		raise IndexError(f'Can\'t access to an index of function ')
-
 
 	# index recursion
 	if len(p) == 5:
+			# Important: p[1] is an instance of var
+		if type(p[1]['exec']) is int or type(p[1]['exec']) is float:
+			raise IndexError(f'Can\'t access to an index of function ')
+
 		if (0 in p[3] or 'treatments' in p[3]) and len(p[3]) != 1:
 			raise IndexError(f'Can\'t access to all elements with multiple indexes given')
 
@@ -164,7 +164,10 @@ def p_expression_function(p):
 		raise TypeError('Value in function cannot be a number')
 
 	if p[1] in internal.functions.keys():
-		p[3]['exec'] = internal.functions[p[1]](p[3]['exec'])
+		if p[1] != 'friedman':
+			p[3]['exec'] = internal.functions[p[1]](p[3]['exec'])
+		else:
+			p[3]['exec'] = internal.functions[p[1]](p[3])
 
 	p[0] = p[3]
 
@@ -176,20 +179,23 @@ def p_error(p):
 
 parser = yacc.yacc(debug=True, start='expression')
 
+def parse_string(s: str, display = True):
+	try:
+		result = parser.parse(s)
+		if result is not None:
+			if display:
+				print(">", s, '\n---->', result, end='\n\n')
+			else:
+				print(result)
+	except Exception as e:
+		print(">", s, '\n****>', e, end='\n\n')
+
 if __name__ == '__main__':
-	display = True
 	while True:
 		try:
 			s = input()
 		except EOFError:
 			break
 		if not s: continue
-		try:
-			result = parser.parse(s)
-			if result is not None:
-				if display:
-					print(">", s, '\n---->', result, end='\n\n')
-				else:
-					print(result)
-		except Exception as e:
-			print(">", s, '\n****>', e, end='\n\n')
+		parse_string(s)
+
