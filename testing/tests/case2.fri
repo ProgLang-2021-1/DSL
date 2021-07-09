@@ -1,0 +1,34 @@
+new matrix_name [treatment1, treatment2, treatment3, treatment4, treatment5]
+
+[[7,5,3,5,6], [9,8,9,1,13]] -> matrix_name
+[[10,72,8,8,8], [3,5,4,5,5]] in matrix_name
+
+matrix_name
+matrix_name[treatment1]
+matrix_name[2]
+matrix_name[2][treatment3]
+
+range(matrix_name)[2]
+range(matrix_name)[treatment1]
+range(matrix_name)[2][treatment3]
+
+range(matrix_name)[3][treatment3]
+range(matrix_name)[3][treatment4]
+range(matrix_name)[3][treatment5]
+
+matrix_name[3]
+range(matrix_name)[3]
+
+
+avg(matrix_name)
+avg(range(matrix_name))
+avg(range(matrix_name)[2])
+avg(range(matrix_name)[treatment1])
+avg(range(matrix_name)[2][treatment3]) // Should raise an error
+
+
+matrix_name
+size(matrix_name)
+size(matrix_name[2])
+size(matrix_name[treatment1])
+size(matrix_name[2][treatment3]) // Should raise an error

@@ -1,6 +1,6 @@
 import ply.yacc as yacc
-from flex import tokens
-from utils import internal
+from .flex import tokens
+from .utils import internal
 var = {}
 
 def p_expression(p):
@@ -176,20 +176,23 @@ def p_error(p):
 
 parser = yacc.yacc(debug=True, start='expression')
 
+def parse_string(s: str, display = True):
+	try:
+		result = parser.parse(s)
+		if result is not None:
+			if display:
+				print(">", s, '\n---->', result, end='\n\n')
+			else:
+				print(result)
+	except Exception as e:
+		print(">", s, '\n****>', e, end='\n\n')
+
 if __name__ == '__main__':
-	display = True
 	while True:
 		try:
 			s = input()
 		except EOFError:
 			break
 		if not s: continue
-		try:
-			result = parser.parse(s)
-			if result is not None:
-				if display:
-					print(">", s, '\n---->', result, end='\n\n')
-				else:
-					print(result)
-		except Exception as e:
-			print(">", s, '\n****>', e, end='\n\n')
+		parse_string(s)
+
