@@ -10,7 +10,6 @@ tokens = [
 	'OPENP',
 	'CLOSEP',
 	'SEP',
-	'DOT',
 	'IN',
 	'RESERVED'
 ]
@@ -25,7 +24,6 @@ t_OPENP  = r'\('
 t_CLOSEP  = r'\)'
 
 t_SEP = r','
-t_DOT = r'\.'
 
 t_IN = r'->'
 
