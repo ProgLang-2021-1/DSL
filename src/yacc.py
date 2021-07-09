@@ -103,24 +103,37 @@ def p_expression_access(p):
 			for index in p[3]:
 				result = []
 				for data in p[1]['exec']:
+					# Access to patients
 					if type(index) is int:
-						if data == p[1]['patients'][index-1] and data in p[1]['patients']:
+
+						# if data or range(data) exists in
+						#  and index retrieves the expected value
+						if (data == p[1]['patients'][index-1] and\
+							 data in p[1]['patients']) or \
+						(data == internal.range_of(p[1]['patients'][index-1]) and\
+							 data in internal.range_of(p[1]['patients'])):
 							result.append(data)
-						elif data in internal.transpose(p[1]['patients']):
+
+						# if transpose(data) or transpose(range(data)) exists
+						#  return the information located at data[index-1]
+						elif (data in internal.transpose(p[1]['patients'])) or \
+							(data in internal.transpose(internal.range_of(p[1]['patients']))):
 							result.append(data[index-1])
-						elif data == internal.range_of(p[1]['patients'][index-1]) and data in internal.range_of(p[1]['patients']):
-							result.append(data)
-						elif data in internal.transpose(internal.range_of(p[1]['patients'])):
-							result.append(data[index-1])
+
+					# Access to treatments
 					elif type(index) is str:
 						treatment_index = p[1]['treatments'].index(index)
-						if data in p[1]['patients']:
+
+						# if data or range(data) exists in
+						#  and index retrieves the expected value
+						if (data in p[1]['patients']) or (data in internal.range_of(p[1]['patients'])):
 							result.append(data[treatment_index])
-						elif data == internal.transpose(p[1]['patients'])[treatment_index] and data in internal.transpose(p[1]['patients']):
-							result.append(data)
-						elif data in internal.range_of(p[1]['patients']):
-							result.append(data[treatment_index])
-						elif data == internal.transpose(internal.range_of(p[1]['patients']))[treatment_index] and data in internal.transpose(internal.range_of(p[1]['patients'])):
+
+						# same logic different result ¯\_(ツ)_/¯
+						elif (data == internal.transpose(p[1]['patients'])[treatment_index] and\
+							 data in internal.transpose(p[1]['patients'])) or \
+							(data == internal.transpose(internal.range_of(p[1]['patients']))[treatment_index] and\
+								 data in internal.transpose(internal.range_of(p[1]['patients']))):
 							result.append(data)
 					else:
 						raise TypeError('Index must be integer or string name')
