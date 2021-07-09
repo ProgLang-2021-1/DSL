@@ -73,10 +73,8 @@ def p_expression_arr(p):
 		p[0].append(p[3])
 
 def p_expression_access(p):
-	"""access : other OPENB arr CLOSEB OPENB arr_str CLOSEB
-		| other OPENB arr_str CLOSEB OPENB arr CLOSEB
-		| other OPENB arr CLOSEB
-		| other OPENB arr_str CLOSEB
+	"""access : access OPENB arr_str CLOSEB
+		| access OPENB arr CLOSEB
 		| other
 	"""
 	global var
@@ -86,35 +84,51 @@ def p_expression_access(p):
 		raise IndexError(f'Can\'t access to an index of function ')
 
 
-	# other[idxs] | other[treatment_names]
+	# index recursion
 	if len(p) == 5:
-		if type(p[3]) is int:
-			# TODO: zero must be all data
-			if p[3] == 0:
+		if (0 in p[3] or 'treatments' in p[3]) and len(p[3]) != 1:
+			raise IndexError(f'Can\'t access to all elements with multiple indexes given')
+
+		# Get all the elements
+		elif (0 in p[3] or 'treatments' in p[3]):
+			if p[3][0] == 0:
 				p[1]['exec'] = p[1]['exec']
-			else:
-				p[1]['exec'] = p[1]['exec'][p[3]-1]
-			p[0] = p[1]
-		elif type(p[3]) is str:
-			# single
-			if p[3] != 'treatments':
-				treatment_index = p[1]['treatments'].index(p[3])
-				p[1]['exec'] = internal.transpose(p[1]['exec'])[treatment_index]
-			else:
+			elif p[3][0] == 'treatments':
 				p[1]['exec'] = internal.transpose(p[1]['exec'])
-			p[0] = p[1]
-		else:
-			raise TypeError('Index must be integer')
 
-	# other[idx][treatment_name] | other[treatment_name][idx]
-	elif len(p) == 7:
-		treatment_index = p[1]['treatments'].index(p[6])
-		if type(p[3]) is int:
-			p[1]['exec'] = p[1]['exec'][p[3]-1][treatment_index]
-			p[0] = p[1]
 		else:
-			raise TypeError('Index must be integer')
+			if not type(p[1]['exec'][0]) is list:
+				p[1]['exec'] = [p[1]['exec']]
+			results = []
+			for index in p[3]:
+				result = []
+				for data in p[1]['exec']:
+					if type(index) is int:
+						if data == p[1]['patients'][index-1] and data in p[1]['patients']:
+							result.append(data)
+						elif data in internal.transpose(p[1]['patients']):
+							result.append(data[index-1])
+						elif data == internal.range_of(p[1]['patients'][index-1]) and data in internal.range_of(p[1]['patients']):
+							result.append(data)
+						elif data in internal.transpose(internal.range_of(p[1]['patients'])):
+							result.append(data[index-1])
+					elif type(index) is str:
+						treatment_index = p[1]['treatments'].index(index)
+						if data in p[1]['patients']:
+							result.append(data[treatment_index])
+						elif data == internal.transpose(p[1]['patients'])[treatment_index] and data in internal.transpose(p[1]['patients']):
+							result.append(data)
+						elif data in internal.range_of(p[1]['patients']):
+							result.append(data[treatment_index])
+						elif data == internal.transpose(internal.range_of(p[1]['patients']))[treatment_index] and data in internal.transpose(internal.range_of(p[1]['patients'])):
+							result.append(data)
+					else:
+						raise TypeError('Index must be integer or string name')
 
+				results.append(result[0] if len(result) == 1 else result)
+			p[1]['exec'] = results if len(results) != 1 else results[0]
+		p[0] = p[1]
+	# other
 	elif len(p) == 2:
 		p[0] = p[1]
 
