@@ -164,7 +164,10 @@ def p_expression_function(p):
 		raise TypeError('Value in function cannot be a number')
 
 	if p[1] in internal.functions.keys():
-		p[3]['exec'] = internal.functions[p[1]](p[3]['exec'])
+		if p[1] != 'friedman':
+			p[3]['exec'] = internal.functions[p[1]](p[3]['exec'])
+		else:
+			p[3]['exec'] = internal.functions[p[1]](p[3])
 
 	p[0] = p[3]
 
