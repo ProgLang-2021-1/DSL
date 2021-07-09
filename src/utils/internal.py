@@ -1,7 +1,7 @@
 def transpose(data):
 	return list(map(list, zip(*data)))
 
-def range_of(data: dict):
+def range_of(data: list):
 	from operator import itemgetter
 	results = []
 
@@ -32,6 +32,10 @@ def range_of(data: dict):
 				current = matrix[result.index(r)]
 				i = j = r
 
+		if j - i > 0:
+			val = avg_of([n for n in range(i,j+1)])
+			for n in range(i,j+1):
+				result[result.index(n)] = val
 		results.append(result)
 	return results if not is_array else results[0]
 
@@ -47,9 +51,18 @@ def size_of(matrix):
 	else:
 		return len(matrix)
 
+def friedman(variable: dict):
+	n = len(variable['patients'])
+	k = len(variable['treatments'])
+
+	sum_R_sqrd = sum([ sum(r)**2 for r in transpose(range_of(variable['patients']))])
+
+	return (12/(n*k*(k+1))*sum_R_sqrd) - 3*n*(k+1)
+
 functions = {
 	'range': range_of,
 	'size' : size_of,
 	'avg' : avg_of,
+	'friedman': friedman,
 }
 
