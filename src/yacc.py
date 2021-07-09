@@ -79,13 +79,13 @@ def p_expression_access(p):
 	"""
 	global var
 
-	# Important: p[1] is an instance of var
-	if type(p[1]['exec']) is int or type(p[1]['exec']) is float:
-		raise IndexError(f'Can\'t access to an index of function ')
-
 
 	# index recursion
 	if len(p) == 5:
+			# Important: p[1] is an instance of var
+		if type(p[1]['exec']) is int or type(p[1]['exec']) is float:
+			raise IndexError(f'Can\'t access to an index of function ')
+
 		if (0 in p[3] or 'treatments' in p[3]) and len(p[3]) != 1:
 			raise IndexError(f'Can\'t access to all elements with multiple indexes given')
 
